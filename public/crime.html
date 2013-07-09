@@ -51,23 +51,12 @@
           map.removeLayer(crime_layer);
         }
         $.getJSON(compass_request, function(data) {
-          
-          //console.log(""+data+"");
+          // Clean up the data by filtering for the selected crime types
           data = purgeCrimes(data);
 
           crime_layer = L.geoJson(data, {                
-            pointToLayer: function (feature, latlng) {
-              // if (!filterCrime(feature.properties.delito_id)) {
-                  //feature.properties["show_on_map"] = false;
-                  //console.log(feature.properties);
-                  //return false;
-             // }
-              //else
-              //{
-                  //feature.properties["show_on_map"] = true;
-                  //console.log(feature.properties)        
+            pointToLayer: function (feature, latlng) {    
                   return L.marker(latlng, {icon: selectMarkerIcon(feature.properties.delito_id)});
-              //}
             },
             onEachFeature: function (feature, layer) {
                   var popupContent = "<p><strong>Delito:&nbsp;</strong>"+feature.properties.delito_desc+"<br><strong>Fecha:&nbsp;</strong>"+feature.properties.fecha_delito+"<br><strong>Hora:&nbsp;</strong>"+feature.properties.hora_delito+"</p>";

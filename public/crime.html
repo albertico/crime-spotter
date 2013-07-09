@@ -14,6 +14,8 @@
 
     <!-- Bootstrap -->
     <link href="../assets/css/bootstrap.css" rel="stylesheet">
+    <link href="../assets/css/crime.css" rel="stylesheet">
+
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -37,8 +39,11 @@
     <script type="text/javascript">
       var map = null;
       var crime_layer = null;
-      var crimes = null; // List of crimes selected in the menu, for filtering
+      var crimes = null;       // List of crimes selected in the menu, for filtering
+      var crimes_total = null; // statistics: { delito_id : [ crimen_desc, total_found ] }
+      var global_count = 0;    // Total crime count - cache
       var center = null;
+      var asset_path  = '../assets/img/icons/'; // Asset path
 
       function reloadMap() {                    
           if((center.lng !=  map.getCenter().lng) && (center.lat != map.getCenter().lat)) 
@@ -53,7 +58,17 @@
 
       }
 
+      function reinitialize() {
+              var crime_layer   = null;
+              var crimes        = null;       
+              var crimes_total  = null; 
+              var global_count  = 0;   
+              var center        = null;
+      }
+
       function spotCrimes() { 
+        reinitialize();         // reinitialize all variables
+        global_count = 0;
         loadFilter();    // Loads list of selected crimes for filtering.        
         center = map.getCenter();
         distance = $("#distance").val();
@@ -84,6 +99,25 @@
         window.setInterval(function() { reloadMap();} , 1000);                
       }
 
+
+      function generateStatistics() {
+        html = "";
+        for(id in crimes_total) {
+            console.log(crimes_total[id][1] +" > 0 ?");
+            if( crimes_total[id][1] > 0) {
+                html += ""+ 
+                       "<div class='span4'>"+            
+                       "<div style='display: block; font-weight: bold;'>"+
+                       "   <h3><img class='thumb' src='"+ (asset_path + getIcon(id)) +"'>"+
+                       ""+ crimes_total[id][0] +": <span class='crime_total'>"+crimes_total[id][1]+"</span></h3>&nbsp;"+
+                       "</div>"+
+                       "</div>";
+            }
+        }
+
+        $("#statistics").html(html);
+      }
+
       function clearMap() {
         for(i in map._layers) {
             if(map._layers[i]._path != undefined) {
@@ -98,9 +132,12 @@
       }
 
 
-      // Clean up the server data, by filtering
+      // Clean up the server json crime data, by filtering per selected user options
       function purgeCrimes(tmp) {        
         var i = tmp["features"].length;
+        // we can't use for loop, because as we splice, the length index changes and breaks
+        // so using while, we can iterate through the original length and splice any 
+        // crimes that do not match our filter
         while(i--) {
              // if this delito_id isn't in the selected filter list, we splice it off.
              if(!filterCrime(tmp["features"][i]["properties"]["delito_id"], tmp["features"][i]["properties"]))
@@ -109,11 +146,7 @@
 
              }             
         }  
-
-        for (var i = 0; i < tmp["features"].length; i++) {
-             // if this delito_id isn't in the selected filter list, we splice it off.
-                //console.log((i + 1) +") "+tmp["features"][i]["properties"]["delito_desc"]);
-        } 
+        generateStatistics(); // generate statistics based on existing data
         return tmp;    
       }
 
@@ -128,7 +161,13 @@
             return false;
         }
         else {
-            //console.log("Crime id "+ id +" is allowed ("+ desc+") ("+ hora +")");          
+            //console.log("Crime id "+id+" is allowed ("+ desc+") ("+ hora +")");          
+            // Update the count stats for this type of filtered crime.
+            crimes_total[""+ id +""][1] += 1;
+            global_count += 1;
+            $("#c"+ id +"").html(crimes_total[id][1]);
+            $("#total").html(global_count);
+            global_count += 1;
             return true;
         }
       }
@@ -136,17 +175,27 @@
       // load the checked items from the html form that have been selected for filtering
       // their numbers correspond to delito_id
       function loadFilter() {
+         //crimes_total = $("#crimenes option:selected").text();
+         // Get an array of all selected options
+         //crimes_total = $("#crimenes option:selected").each(function() { console.log( $(this).text()); });
          crimes = $('#crimenes').val();
+         crimes_total = {};
+
+         $("#crimenes option:selected").each(function()
+          {
+            // { delito_id : [ crimen_desc, total_found ] }
+             crimes_total[$(this).val()] = [$(this).text(), 0]; // initialize total crimes
+          });
          //console.log("Allowing the following crimes to be seen:");
-          for (var i = 0; i < crimes.length; i++) {
-              //console.log(crimes[i]);
-              //Do something
-          }         
+
       }
 
-      function selectMarkerIcon(id) {
+      // Returns an icon based on an ID
+      function getIcon(id) {
+        id = parseInt(id);
         markerIcon = 'unknown.png';
-        switch(id) {
+        switch(id) 
+        {
           case 1:
             markerIcon = 'asesinato.png';
             break;
@@ -172,13 +221,21 @@
             markerIcon = 'incendio.png';
             break;
         }
+        return markerIcon;
+    }
+
+
+      // Returns a leaflet icon based on an id
+      function selectMarkerIcon(id) {
+        markerIcon = getIcon(id);
         return L.icon({
-          iconUrl: '../assets/img/icons/' + markerIcon,
+          iconUrl: (asset_path + markerIcon),
           iconSize: [32, 37],
           iconAnchor: [16, 37],
           popupAnchor: [0, -28]
         });
       }
+
       $(window).on('load', function () {
         $('select').selectpicker('selectAll');
         var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -188,10 +245,11 @@
         map = L.map('map').setView([18.428, -66.059], 14).addLayer(osm);
         //$("#map").height($(window).height());
       });
-
+       // GPS Leaflet method - under review 
       function locateUser() {
           this.map.locate({setView : true});
-      }      
+      }  
+   
     </script>
   </head>
   <body onload="spotCrimes();">
@@ -204,7 +262,9 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="brand" href="#">Crime Spotter (beta)</a>
+        <a class="brand" href="#">
+          <span><img id='logo'src='../assets/img/compass.png'></span>
+            Crime Spotter (beta)</a>
         <div class="nav-collapse collapse">
           <ul class="nav">
           </ul>
@@ -217,14 +277,14 @@
       <form class="form-inline">
         <label><b>Tipo de Crimen</b>&nbsp;</label>
         <select id="crimenes" class="selectpicker span4" multiple data-selected-text-format="count > 4">
-          <option value=1>Asesinato</option>
+          <option value=1>Asesinatos</option>
           <option value=2>Violaci&oacute;n</option>
-          <option value=3>Robo</option>
+          <option value=3>Robos</option>
           <option value=4>Agresi&oacute;n Agravada</option>
-          <option value=5>Escalamiento</option>
+          <option value=5>Escalamientos</option>
           <option value=6>Apropiaci&oacute;n Ilegal</option>
-          <option value=7>Vehiculo</option>
-          <option value=8>Incendio</option>
+          <option value=7>Vehiculos Hurtados</option>
+          <option value=8>Incendios</option>
         </select>
         &nbsp;&nbsp;&nbsp;
         <label><b>Distancia en Millas</b>&nbsp;</label>
@@ -239,6 +299,32 @@
       </form>
     </div>
   </div>
-  <div id="map" class="map" style="height: 530px"></div>
+  <div class="container">
+  <div id="map" class="map" style="height: 530px"></div>    
+    <div class="row">
+        <div class="span12">        
+          <div style="display: block; font-weight: bold; font-size: medium">
+            Total de Crimenes&nbsp;
+            <div id="total" style="display: inline; font-size: medium;">0</div>
+            <hr>
+          </div>
+        </div>   
+
+        <div id="statistics">
+          <!-- Aqui se populan las estadisticas -->
+        </div>
+
+        <div class="span12" style="padding-top: 50px;">
+          <div class="span4">
+              Powered by Compass <a href="http://api.pr.gov">api.pr.gov</a>
+          </div>
+          <div class="span4">          
+            <a href="https://github.com/albertico/compass-api-crime-spotter">C&oacute;digo en Github</a>          
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
   </body>
 </html>

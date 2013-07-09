@@ -1,0 +1,16 @@
+.thumb {
+	padding: 10px;
+	/* width: 75px;
+	height: 80px; */	
+	width: 50px;
+	height: 55px;		
+}
+
+.crime_total {
+	color: red;
+}
+
+#logo {
+	width: 30px;
+	height: 30px;
+}

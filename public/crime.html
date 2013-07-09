@@ -175,9 +175,9 @@
             //console.log("Crime id "+id+" is allowed ("+ desc+") ("+ hora +")");          
             // Update the count stats for this type of filtered crime.
             crimes_total[""+ id +""][1] += 1;            
+            global_count += 1;            
             $("#c"+ id +"").html(crimes_total[id][1]);
             $("#total").html(global_count);
-            global_count += 1;
             return true;
         }
       }
@@ -295,6 +295,7 @@
           <div class="span12">
               <ul class="breadcrumb">
                 <li><a href="#">API.PR.GOV</a> <span class="divider">/</span></li>
+                <li><a href="#">Apps</a> <span class="divider">/</span></li>                
                 <li><a href="#">Ley y Orden</a> <span class="divider">/</span></li> 
                 <li><a href="#">Policia</a> <span class="divider">/</span></li>  
                 <li><a href="#">Crimen</a> <span class="divider">/</span></li>    

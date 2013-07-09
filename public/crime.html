@@ -38,9 +38,22 @@
       var map = null;
       var crime_layer = null;
       var crimes = null; // List of crimes selected in the menu, for filtering
+      var center = null;
+
+      function reloadMap() {                    
+          if((center.lng !=  map.getCenter().lng) && (center.lat != map.getCenter().lat)) 
+          {
+            //console.log("Map moved...")
+            center = map.getCenter();
+            spotCrimes();
+          } else {
+            //console.log("nothing...")
+          }
+
+      }
 
       function spotCrimes() { 
-        loadFilter();    // Loads list of selected crimes for filtering.
+        loadFilter();    // Loads list of selected crimes for filtering.        
         center = map.getCenter();
         distance = $("#distance").val();
         host = "compass.pr.gov"
@@ -65,6 +78,9 @@
           });
           map.addLayer(crime_layer);
         });
+        
+        // Set the timer for window refresh
+        window.setInterval(function() { reloadMap();} , 3000);                
       }
 
       // Clean up the server data, by filtering
@@ -81,7 +97,7 @@
 
         for (var i = 0; i < tmp["features"].length; i++) {
              // if this delito_id isn't in the selected filter list, we splice it off.
-                console.log((i + 1) +") "+tmp["features"][i]["properties"]["delito_desc"]);
+                //console.log((i + 1) +") "+tmp["features"][i]["properties"]["delito_desc"]);
         } 
         return tmp;    
       }
@@ -93,11 +109,11 @@
         desc = prop["delito_desc"];
         hora = prop["hora_delito"];
         if (result == -1) {
-            console.log("Crime id "+ id +" is going to get dropped");
+            //console.log("Crime id "+ id +" is going to get dropped");
             return false;
         }
         else {
-            console.log("Crime id "+ id +" is allowed ("+ desc+") ("+ hora +")");          
+            //console.log("Crime id "+ id +" is allowed ("+ desc+") ("+ hora +")");          
             return true;
         }
       }
@@ -106,9 +122,9 @@
       // their numbers correspond to delito_id
       function loadFilter() {
          crimes = $('#crimenes').val();
-         console.log("Allowing the following crimes to be seen:");
+         //console.log("Allowing the following crimes to be seen:");
           for (var i = 0; i < crimes.length; i++) {
-              console.log(crimes[i]);
+              //console.log(crimes[i]);
               //Do something
           }         
       }

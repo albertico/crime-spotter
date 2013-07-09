@@ -59,16 +59,16 @@
       }
 
       function reinitialize() {
-              var crime_layer   = null;
-              var crimes        = null;       
-              var crimes_total  = null; 
-              var global_count  = 0;   
-              var center        = null;
+              crimes        = null;       
+              crimes_total  = null; 
+              global_count  = 0;   
+              center        = null;
+              clearMap();
       }
 
       function spotCrimes() { 
         reinitialize();         // reinitialize all variables
-        global_count = 0;
+
         loadFilter();    // Loads list of selected crimes for filtering.        
         center = map.getCenter();
         distance = $("#distance").val();
@@ -264,7 +264,10 @@
         </button>
         <a class="brand" href="#">
           <span><img id='logo'src='../assets/img/compass.png'></span>
-            Crime Spotter (beta)</a>
+            Crime Spotter</a>
+          <div id="beta">
+            <span class="label label-info">beta!</span>
+          </div>
         <div class="nav-collapse collapse">
           <ul class="nav">
           </ul>
@@ -273,8 +276,16 @@
     </div>
   </div>
   <div class="container">
-    <div class="row-fluid">
-      <form class="form-inline">
+    <!-- 
+    <a href="#myModal" role="button" class="btn btn-danger" data-toggle="modal">Opciones Avanzadas</a>
+
+  -->
+  </div>
+  <div id="map" class="map" style="height: 350px"></div>      
+  <div class="container">    
+    <div class="row">
+     <form class="form-inline">    
+      <span class="span6">
         <label><b>Tipo de Crimen</b>&nbsp;</label>
         <select id="crimenes" class="selectpicker span4" multiple data-selected-text-format="count > 4">
           <option value=1>Asesinatos</option>
@@ -286,45 +297,77 @@
           <option value=7>Vehiculos Hurtados</option>
           <option value=8>Incendios</option>
         </select>
-        &nbsp;&nbsp;&nbsp;
+      </span>
+      <span class="span6">
         <label><b>Distancia en Millas</b>&nbsp;</label>
         <select id="distance">
           <option selected="selected">1</option>
           <option>3</option>
           <option>5</option>
         </select>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </span>
       </form>
-    </div>
-  </div>
-  <div id="map" class="map" style="height: 350px"></div>      
-  <div class="container">    
-    <div class="row">
-        <div class="span12">        
-          <hr>
-          <div style="display: block; font-weight: bold; font-size: xx-large;">
-            <span id='loading'></span>Crimenes&nbsp;
-            <div id="total" style="display: inline; font-size: x-large; color: blue;"></div>
-          </div>     
-        </div>
+     </div>
+        <div class="span12">
+
+          <hr>    
+
+
+          <div style="display: inline; font-weight: bold; font-size: xx-large;">
+            <span id='loading'></span>
+            <span>Crimenes</span>
+            <div style="display: inline;">
+              <span id="total" class="badge badge-warning" style="font-size: large; padding: 10px; margin-bottom: 10px;">0</span>
+            </div>                  
+          </div>
     </div>
 
-    <div class="row" style="padding-top: 10px;">
+
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header"> 
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Opciones Avanzadas</h3>
+  </div>
+  <div class="modal-body">
         <div class="span6">
-             <button class="btn btn-danger" type="button" onclick=spotCrimes();>Buscar</button>
         </div>
          <div class="span6">               
              <button class="btn btn" type="button" onclick=locateUser();>Localizaci&oacute;n GPS</button>          
         </div>
-    </div>
-
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" data-dismiss="modal" onclick="spotCrimes();">Grabar cambios</button>
+  </div>
+</div>
 
     <div class="row">
+
             <div id="statistics">
               <!-- Aqui se populan las estadisticas -->
             </div>
-    </div>        
-    <div class="row" style="padding-top: 20px; padding-bottom: 20px;">    
+    </div>            
+    <div class="row" style="padding-top: 20px; padding-bottom: 20px;"> 
+    <!-- nota aclaratoria - disclaimer -->   
+      <div class="span12">
+          <div class="alert alert-info">
+            Esta aplicación se alimenta de datos provistos a la Oficina de Tecnolog&iacute;a de Informaci&oacute;n Gubernamental (TIG) del <a href="http://cio.pr.gov">Principal Ejecutivo de Inform&aacute;tica</a> (CIO) de Puerto Rico. Para uso oficial, toda informaci&oacute;n debe ser corroborada con la <a href="http://www.policia.pr.gov/">Policia de Puerto Rico</a>.
+          </div>
+      </div>
+
+          <div class="span12">
+              <ul class="breadcrumb">
+                <li><a href="#">API.PR.GOV</a> <span class="divider">/</span></li>
+                <li><a href="#">Ley y Orden</a> <span class="divider">/</span></li> 
+                <li><a href="#">Policia</a> <span class="divider">/</span></li>  
+                <li><a href="#">Crimen</a> <span class="divider">/</span></li>    
+                <li><a href="#">Compass</a> <span class="divider">/</span></li>  
+                <li class="active">Crime Spotter</li>
+              </ul> 
+          </div>   
+
+
           <div class="span6">
               Powered by Compass <a href="http://api.pr.gov">api.pr.gov</a>
           </div>

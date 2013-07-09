@@ -43,6 +43,7 @@
       var crimes_total = null; // statistics: { delito_id : [ crimen_desc, total_found ] }
       var global_count = 0;    // Total crime count - cache
       var center = null;
+      var drawing = false;     // Flag that tells us wether we're rendering the map
       var asset_path  = '../assets/img/icons/'; // Asset path
 
       function reloadMap() {                    
@@ -59,16 +60,23 @@
       }
 
       function reinitialize() {
+              clearMap();        
               crimes        = null;       
               crimes_total  = null; 
               global_count  = 0;   
               center        = null;
-              clearMap();
+              darwing       = false;
       }
 
       function spotCrimes() { 
-        reinitialize();         // reinitialize all variables
+        // Do not continue if we're currently rendering
+        if (drawing) {
+          console.log("cannot redraw, we're currently rendering");
+          return false;
+        }
+        drawing = true;
 
+        reinitialize();         // reinitialize all variables
         loadFilter();    // Loads list of selected crimes for filtering.        
         center = map.getCenter();
         distance = $("#distance").val();
@@ -85,14 +93,18 @@
 
           crime_layer = L.geoJson(data, {                
             pointToLayer: function (feature, latlng) {    
+                  drawing = true;   // make sure we're not trying to spot crimes while rendering               
                   return L.marker(latlng, {icon: selectMarkerIcon(feature.properties.delito_id)});
             },
             onEachFeature: function (feature, layer) {
+                  drawing = true;   // make sure we're not trying to spot crimes while rendering
                   var popupContent = "<p><strong>Delito:&nbsp;</strong>"+feature.properties.delito_desc+"<br><strong>Fecha:&nbsp;</strong>"+feature.properties.fecha_delito+"<br><strong>Hora:&nbsp;</strong>"+feature.properties.hora_delito+"</p>";
                   layer.bindPopup(popupContent);
             }
           });
           map.addLayer(crime_layer);
+          // Only after we're done, then we allow this method to be called again                    
+          drawing = false;
         });
         
         // Set the timer for window refresh
@@ -103,7 +115,6 @@
       function generateStatistics() {
         html = "";
         for(id in crimes_total) {
-            console.log(crimes_total[id][1] +" > 0 ?");
             if( crimes_total[id][1] > 0) {
                 html += ""+ 
                        "<div class='span6'>"+            
@@ -163,8 +174,7 @@
         else {
             //console.log("Crime id "+id+" is allowed ("+ desc+") ("+ hora +")");          
             // Update the count stats for this type of filtered crime.
-            crimes_total[""+ id +""][1] += 1;
-            global_count += 1;
+            crimes_total[""+ id +""][1] += 1;            
             $("#c"+ id +"").html(crimes_total[id][1]);
             $("#total").html(global_count);
             global_count += 1;

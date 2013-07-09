@@ -106,7 +106,7 @@
             console.log(crimes_total[id][1] +" > 0 ?");
             if( crimes_total[id][1] > 0) {
                 html += ""+ 
-                       "<div class='span4'>"+            
+                       "<div class='span6'>"+            
                        "<div style='display: block; font-weight: bold;'>"+
                        "   <h3><img class='thumb' src='"+ (asset_path + getIcon(id)) +"'>"+
                        ""+ crimes_total[id][0] +": <span class='crime_total'>"+crimes_total[id][1]+"</span></h3>&nbsp;"+
@@ -294,37 +294,47 @@
           <option>5</option>
         </select>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <button class="btn btn-danger" type="button" onclick=spotCrimes();>Buscar</button> 
-        <button class="btn btn" type="button" onclick=locateUser();>Localizaci&oacute;n GPS</button>       
       </form>
     </div>
   </div>
-  <div class="container">
-  <div id="map" class="map" style="height: 530px"></div>    
+  <div id="map" class="map" style="height: 350px"></div>      
+  <div class="container">    
     <div class="row">
         <div class="span12">        
-          <div style="display: block; font-weight: bold; font-size: medium">
-            Total de Crimenes&nbsp;
-            <div id="total" style="display: inline; font-size: medium;">0</div>
-            <hr>
-          </div>
-        </div>   
-
-        <div id="statistics">
-          <!-- Aqui se populan las estadisticas -->
+          <hr>
+          <div style="display: block; font-weight: bold; font-size: xx-large;">
+            <span id='loading'></span>Crimenes&nbsp;
+            <div id="total" style="display: inline; font-size: x-large; color: blue;"></div>
+          </div>     
         </div>
+    </div>
 
-        <div class="span12" style="padding-top: 50px;">
-          <div class="span4">
+    <div class="row" style="padding-top: 10px;">
+        <div class="span6">
+             <button class="btn btn-danger" type="button" onclick=spotCrimes();>Buscar</button>
+        </div>
+         <div class="span6">               
+             <button class="btn btn" type="button" onclick=locateUser();>Localizaci&oacute;n GPS</button>          
+        </div>
+    </div>
+
+
+    <div class="row">
+            <div id="statistics">
+              <!-- Aqui se populan las estadisticas -->
+            </div>
+    </div>        
+    <div class="row" style="padding-top: 20px; padding-bottom: 20px;">    
+          <div class="span6">
               Powered by Compass <a href="http://api.pr.gov">api.pr.gov</a>
           </div>
-          <div class="span4">          
+          <div class="span6">          
             <a href="https://github.com/albertico/compass-api-crime-spotter">C&oacute;digo en Github</a>          
           </div>
-        </div>
-
-      </div>
+        </div>      
     </div>
   </div>
-  </body>
+  <!-- Developed by: Alberto Colón - (https://github.com/albertico/) CIO DRNA.pr.gov --> 
+  <!-- Contributor: Andrés Colón Pérez (http://github.com/mindware/) CIO OGP.pr.gov  -->
+</body>
 </html>

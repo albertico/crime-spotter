@@ -1,5 +1,5 @@
 .thumb {
-	padding: 10px;
+	padding-right: 12px;
 	/* width: 75px;
 	height: 80px; */	
 	width: 50px;
@@ -13,4 +13,7 @@
 #logo {
 	width: 30px;
 	height: 30px;
+}
+
+#loading {
 }

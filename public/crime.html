@@ -37,7 +37,10 @@
     <script type="text/javascript">
       var map = null;
       var crime_layer = null;
-      function spotCrimes() {
+      var crimes = null; // List of crimes selected in the menu, for filtering
+
+      function spotCrimes() { 
+        loadFilter();    // Loads list of selected crimes for filtering.
         center = map.getCenter();
         distance = $("#distance").val();
         host = "compass.pr.gov"
@@ -48,19 +51,79 @@
           map.removeLayer(crime_layer);
         }
         $.getJSON(compass_request, function(data) {
-          console.log(""+data+"");
-          crime_layer = L.geoJson(data, {
+          
+          //console.log(""+data+"");
+          data = purgeCrimes(data);
+
+          crime_layer = L.geoJson(data, {                
             pointToLayer: function (feature, latlng) {
-              return L.marker(latlng, {icon: selectMarkerIcon(feature.properties.delito_id)});
+              // if (!filterCrime(feature.properties.delito_id)) {
+                  //feature.properties["show_on_map"] = false;
+                  //console.log(feature.properties);
+                  //return false;
+             // }
+              //else
+              //{
+                  //feature.properties["show_on_map"] = true;
+                  //console.log(feature.properties)        
+                  return L.marker(latlng, {icon: selectMarkerIcon(feature.properties.delito_id)});
+              //}
             },
             onEachFeature: function (feature, layer) {
-              var popupContent = "<p><strong>Delito:&nbsp;</strong>"+feature.properties.delito_desc+"<br><strong>Fecha:&nbsp;</strong>"+feature.properties.fecha_delito+"<br><strong>Hora:&nbsp;</strong>"+feature.properties.hora_delito+"</p>";
-              layer.bindPopup(popupContent);
+                  var popupContent = "<p><strong>Delito:&nbsp;</strong>"+feature.properties.delito_desc+"<br><strong>Fecha:&nbsp;</strong>"+feature.properties.fecha_delito+"<br><strong>Hora:&nbsp;</strong>"+feature.properties.hora_delito+"</p>";
+                  layer.bindPopup(popupContent);
             }
           });
           map.addLayer(crime_layer);
         });
       }
+
+      // Clean up the server data, by filtering
+      function purgeCrimes(tmp) {        
+        var i = tmp["features"].length;
+        while(i--) {
+             // if this delito_id isn't in the selected filter list, we splice it off.
+             if(!filterCrime(tmp["features"][i]["properties"]["delito_id"], tmp["features"][i]["properties"]))
+             {
+                tmp["features"].splice(i, 1); // delete this index completely
+
+             }             
+        }  
+
+        for (var i = 0; i < tmp["features"].length; i++) {
+             // if this delito_id isn't in the selected filter list, we splice it off.
+                console.log((i + 1) +") "+tmp["features"][i]["properties"]["delito_desc"]);
+        } 
+        return tmp;    
+      }
+
+      // return true if we should allow this type of crime to be seen
+      // if it is to be dropped, we return false
+      function filterCrime(id, prop) {
+        result = $.inArray(""+id +"", crimes); // check if this crime id is wanted       
+        desc = prop["delito_desc"];
+        hora = prop["hora_delito"];
+        if (result == -1) {
+            console.log("Crime id "+ id +" is going to get dropped");
+            return false;
+        }
+        else {
+            console.log("Crime id "+ id +" is allowed ("+ desc+") ("+ hora +")");          
+            return true;
+        }
+      }
+
+      // load the checked items from the html form that have been selected for filtering
+      // their numbers correspond to delito_id
+      function loadFilter() {
+         crimes = $('#crimenes').val();
+         console.log("Allowing the following crimes to be seen:");
+          for (var i = 0; i < crimes.length; i++) {
+              console.log(crimes[i]);
+              //Do something
+          }         
+      }
+
       function selectMarkerIcon(id) {
         markerIcon = 'unknown.png';
         switch(id) {
@@ -128,26 +191,26 @@
   <div class="container">
     <div class="row-fluid">
       <form class="form-inline">
-        <label><b>CRIMES</b>&nbsp;</label>
-        <select class="selectpicker span4" multiple data-selected-text-format="count > 4">
+        <label><b>Tipo de Crimen</b>&nbsp;</label>
+        <select id="crimenes" class="selectpicker span4" multiple data-selected-text-format="count > 4">
           <option value=1>Asesinato</option>
-          <option value=2>Violacion</option>
+          <option value=2>Violaci&oacute;n</option>
           <option value=3>Robo</option>
-          <option value=4>Agresion</option>
+          <option value=4>Agresi&oacute;n Agravada</option>
           <option value=5>Escalamiento</option>
-          <option value=6>Apropiacion</option>
+          <option value=6>Apropiaci&oacute;n Ilegal</option>
           <option value=7>Vehiculo</option>
           <option value=8>Incendio</option>
         </select>
         &nbsp;&nbsp;&nbsp;
-        <label><b>DISTANCE</b>&nbsp;</label>
+        <label><b>Distancia en Millas</b>&nbsp;</label>
         <select id="distance">
           <option>1</option>
           <option>3</option>
           <option>5</option>
         </select>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <button class="btn btn-danger" type="button" onclick=spotCrimes();>Spot Crimes</button>
+        <button class="btn btn-danger" type="button" onclick=spotCrimes();>Visualizar</button>
       </form>
     </div>
   </div>

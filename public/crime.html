@@ -45,6 +45,7 @@
           {
             //console.log("Map moved...")
             center = map.getCenter();
+            clearMap();
             spotCrimes();
           } else {
             //console.log("nothing...")
@@ -80,8 +81,22 @@
         });
         
         // Set the timer for window refresh
-        window.setInterval(function() { reloadMap();} , 1500);                
+        window.setInterval(function() { reloadMap();} , 1000);                
       }
+
+      function clearMap() {
+        for(i in map._layers) {
+            if(map._layers[i]._path != undefined) {
+                try {
+                    map.removeLayer(map._layers[i]);
+                }
+                catch(e) {
+                    console.log("problem with " + e + map._layers[i]);
+                }
+            }
+        }
+      }
+
 
       // Clean up the server data, by filtering
       function purgeCrimes(tmp) {        

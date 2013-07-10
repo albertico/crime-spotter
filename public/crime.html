@@ -47,7 +47,10 @@
       var asset_path  = '../assets/img/icons/'; // Asset path
 
 
+      // initial call for the spotter on onLoad
       function setupSpotter() {
+            // perform any calls that must be done only onLoad
+            // and call SpotCrime()
             spotCrimes();
       }
 
@@ -142,7 +145,7 @@
                        "<div class='span6'>"+            
                           "<div style='display: block; font-weight: bold;'>"+
                         "   <h3><img class='thumb' src='"+ (asset_path + getIcon(id)) +"'>"+
-                        "<a href='#' class='reglamento' data-toggle='tooltip' title='' data-original-title='"+ getTooltip(id) +"'>"+ crimes_total[id][0] +"</a>: <span class='crime_total'>"+crimes_total[id][1]+"</span></h3>&nbsp;"+
+                        "<a href='#' class='reglamento' data-toggle='tooltip' title='' data-original-title='"+ getTooltip(id) +"' onclick='updateFilter("+ id +");'>"+ crimes_total[id][0] +"</a>: <span class='crime_total'>"+crimes_total[id][1]+"</span></h3>&nbsp;"+
                         "</div>"+
                        "</div>";    
             }
@@ -163,6 +166,20 @@
                 }
             }
         }
+      }
+
+      // This method allows users to click on a type of crime
+      // from the statistics link and load a list of crimes
+      // filtered down.
+      function updateFilter(id) {
+          $("#crimenes option:selected").each(function()
+          {              
+              if( id != $(this).val()) 
+              {
+                  $(this).removeAttr('selected');
+              }
+          });
+          spotCrimes();
       }
 
 
@@ -401,7 +418,6 @@
         <button class="btn" data-dismiss="modal" onclick="spotCrimes(); return false;">Recargar</button>      
      </div>
 
-
         <div class="span12">
           <hr>    
           <div style="display: inline; font-weight: bold; font-size: xx-large;">
@@ -412,7 +428,6 @@
             </div>                  
           </div>
     </div>
-
 
 <!-- Modal -->
 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

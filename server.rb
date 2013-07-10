@@ -9,6 +9,6 @@ get '/assets/*' do
   send_file File.join('assets', params[:splat][0])
 end
 
-get '/crime' do
+get '/' do
   send_file File.join(settings.public_folder, 'crime.html')
 end

@@ -1,0 +1,22 @@
+/.bundle
+/db/*.sqlite3
+TODO
+README
+.DS_Store
+/*-workspace
+/*-project
+*.rbc
+*.sassc
+.sass-cache
+.rspec
+/.bundle
+/vendor/bundle
+/log/*
+/tmp/*
+/public/system/*
+/coverage/
+/spec/tmp/*
+**.orig
+rerun.txt
+# Ignore Environment Files
+.env

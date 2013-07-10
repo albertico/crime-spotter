@@ -355,7 +355,7 @@
   <div class="container">    
     <div class="row">
      <form class="form-inline">    
-      <span class="span6">
+      <span class="span4">
         <label><b>Tipo de Crimen</b>&nbsp;</label>
         <select id="crimenes" class="selectpicker span4" multiple data-selected-text-format="count > 4">
           <!-- Apropiación ilegal es -->
@@ -378,14 +378,19 @@
           <option value=8>Incendios</option>
         </select>
       </span>
-      <span class="span6">
+      <span class="span4">
         <label><b>Distancia en Millas</b>&nbsp;</label>
+        <br/>
         <select id="distance">
           <option selected="selected">1</option>
           <option>3</option>
           <option>5</option>
-        </select>
-      </span>
+        </select>        
+      </span>    
+      <span class="span4">
+        <br/>
+        <button class="btn" data-dismiss="modal" onclick="spotCrimes();">Recargar</button>
+      </span>  
       </form>
      </div>
 

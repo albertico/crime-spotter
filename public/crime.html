@@ -182,7 +182,6 @@
           spotCrimes();
       }
 
-
       // Clean up the server json crime data, by filtering per selected user options
       function purgeCrimes(tmp) {        
         var i = tmp["features"].length;
@@ -226,12 +225,8 @@
       // load the checked items from the html form that have been selected for filtering
       // their numbers correspond to delito_id
       function loadFilter() {
-         //crimes_total = $("#crimenes option:selected").text();
-         // Get an array of all selected options
-         //crimes_total = $("#crimenes option:selected").each(function() { console.log( $(this).text()); });
          crimes = $('#crimenes').val();
          crimes_total = {};
-
          $("#crimenes option:selected").each(function()
           {
             // { delito_id : [ crimen_desc, total_found ] }
@@ -274,8 +269,7 @@
         }
         return markerIcon;
     }
-
-
+    // Returns tooltips data
     function getTooltip(id) {
        switch(parseInt(id)) {
           case 1: // Asesinato
@@ -295,7 +289,7 @@
           case 8: // Incendios
             return "Toda persona que maliciosamente pegare fuego a un edificio. Toda persona que incendie montes, sembrados, pastos, bosques o plantaciones ajenos.Toda persona que por negligencia ocasione un incendio de un edificio, montes, sembrados, pastos, bosques o plantaciones, que ponga en peligro la vida, salud o integridad f&iacute;sica de las personas.";          
           }                                       
-          return "Hi";
+          return "";
     }
 
       // Returns a leaflet icon based on an id
@@ -314,9 +308,7 @@
         var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                       osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                       osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
-        //map = L.map('map').setView([18.353711, -66.005945], 10).addLayer(osm);
         map = L.map('map').setView([18.428, -66.059], 14).addLayer(osm);
-        //$("#map").height($(window).height());
       });
        // GPS Leaflet method - under review 
       function locateUser() {
@@ -429,30 +421,12 @@
           </div>
     </div>
 
-<!-- Modal -->
-<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header"> 
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel">Definiciones</h3>
-  </div>
-  <div class="modal-body">
-        <div class="span6">
-        </div>
-         <div class="span6">                     
-        </div>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary" data-dismiss="modal" onclick="spotCrimes();">Grabar cambios</button>
-  </div>
-</div>
-
     <div class="row">
-
             <div id="statistics">
-              <!-- Aqui se populan las estadisticas -->
+              <!-- Aqui se populan las estadisticas mediante JS -->
             </div>
-    </div>            
+    </div>           
+     
     <div class="row" style="padding-top: 20px; padding-bottom: 20px;"> 
 
 

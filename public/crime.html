@@ -46,6 +46,11 @@
       var drawing = false;     // Flag that tells us wether we're rendering the map
       var asset_path  = '../assets/img/icons/'; // Asset path
 
+
+      function setupSpotter() {
+            spotCrimes();
+      }
+
       function reloadMap() {                    
           if((center.lng !=  map.getCenter().lng) && (center.lat != map.getCenter().lat)) 
           {
@@ -139,11 +144,12 @@
                         "   <h3><img class='thumb' src='"+ (asset_path + getIcon(id)) +"'>"+
                         "<a href='#' class='reglamento' data-toggle='tooltip' title='' data-original-title='"+ getTooltip(id) +"'>"+ crimes_total[id][0] +"</a>: <span class='crime_total'>"+crimes_total[id][1]+"</span></h3>&nbsp;"+
                         "</div>"+
-                       "</div>";                       
+                       "</div>";    
             }
         }
         $("#total").html(global_count);                        
         $("#statistics").html(html);
+        $('.reglamento').tooltip(); // setup tooltips
       }
 
       function clearMap() {
@@ -254,9 +260,9 @@
 
 
     function getTooltip(id) {
-       switch(id) {
+       switch(parseInt(id)) {
           case 1: // Asesinato
-            return "Asesinato es dar muerte a un ser humano con intenci&oacute;n de caus&acute;rsela.";
+            return "Asesinato es dar muerte a un ser humano con intenci&oacute;n de caus&aacute;rsela.";
           case 2: // Violación
             return "Ser&acute; sancionada con pena de reclusi&oacute;n por un t&eacute;rmino fijo de cincuenta (50) años, toda persona que lleve a cabo, o que provoque que otra persona lleve a cabo, un acto orogenital o una penetraci&oacute;n sexual vaginal o anal ya sea &eacute;sta genital, digital, o instrumental, en cualquiera de las circunstancias (que se detallan en el articulo 130 del C&oacute;digo Penal 2012).";
           case 3: // Robo
@@ -264,14 +270,15 @@
           case 4: // Agresión Agravada
             return "Toda persona que ilegalmente, por cualquier medio o forma, cause a otra una lesión a su integridad corporal (art&iacute;culo 108)";
           case 5: // Ecalamientos
-            return "Toda persona que penetre en una casa, edificio u otra construcci&oacute;n o estructura, o sus dependencias o anexos, con el prop&oacute;sito de cometer cualquier delito de apropiaci&oacute;n ilegal o cualquier delito grave";           
+            return "Toda persona que penetre en una casa, edificio u otra construcci&oacute;n o estructura, o sus dependencias o anexos, con el prop&oacute;sito de cometer cualquier delito de apropiaci&oacute;n ilegal o cualquier delito grave.";           
           case 6: // Apropiación Ilegal
-            return "Toda persona que se apropie de un medio de identificaci&oacute;n de otra persona con la intenci&oacute;n de realizar cualquier acto ilegal";
+            return "Toda persona que se apropie sin violencia de bienes muebles pertenecientes a otras personas.";
           case 7: // Vehículo Hurtado
             return "Hurto de Vehiculo";
           case 8: // Incendios
-            return "Toda persona que maliciosamente pegare fuego a un edificio. Toda persona que incendie montes, sembrados, pastos, bosques o plantaciones ajenos.Toda persona que por negligencia ocasione un incendio de un edificio, montes, sembrados, pastos, bosques o plantaciones, que ponga en peligro la vida, salud o integridad f&iacute;sica de las personas.";
+            return "Toda persona que maliciosamente pegare fuego a un edificio. Toda persona que incendie montes, sembrados, pastos, bosques o plantaciones ajenos.Toda persona que por negligencia ocasione un incendio de un edificio, montes, sembrados, pastos, bosques o plantaciones, que ponga en peligro la vida, salud o integridad f&iacute;sica de las personas.";          
           }                                       
+          return "Hi";
     }
 
       // Returns a leaflet icon based on an id
@@ -301,7 +308,7 @@
    
     </script>
   </head>
-  <body onload="spotCrimes();">
+  <body onload="setupSpotter();">
             <div class="navbar navbar-inverse navbar-fixed-top">
               <div class="navbar-inner">
                 <div class="container">
@@ -466,11 +473,6 @@
     </div>
   </div>
   <!-- Developed by: Alberto Colón - (https://github.com/albertico/) CIO DRNA.pr.gov --> 
-  <!-- Contributor: Andrés Colón Pérez (http://github.com/mindware/) CIO OGP.pr.gov  -->
-  <script type='text/javascript'>
-     $(document).ready(function () {
-      $('.reglamento').popover();
-   });
-  </script>  
+  <!-- Contributor: Andrés Colón Pérez (http://github.com/mindware/) CIO OGP.pr.gov  --> 
 </body>
 </html>

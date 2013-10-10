@@ -40,7 +40,7 @@
       .map-canvas * { .box-sizing(content-box); }
 
       #map {
-        height: 350px;
+        height: 380px;
         /* width: 100%; */
         min-height: 100%;
         min-width: 100%;
@@ -115,6 +115,11 @@
         });
       }
 
+      function locateGPS() {
+        this.map.locate({setView : true});
+        spotCrimes();
+      }
+
       $(window).on('load', function () {
         $('#crimes-select').selectpicker('selectAll');
         $('#distance-select').selectpicker();
@@ -155,7 +160,7 @@
     
     <div id="map" class="map-canvas"></div>
     
-    <div class="container">
+    <div class="container crime-search">
       <div class="row">
         <div class="col-md-9 col-sm-10 col-xs-10">
           <div class="panel-group" id="accordion">
@@ -254,10 +259,14 @@
         </div>
         <div class="col-md-3 col-sm-2 col-xs-2">
           <div class="row">
-            <button type="button" class="btn btn-danger btn-lg btn-block visible-xs visible-sm">My Location</button>
+            <div class="crime-btns">
+              <button type="button" class="btn btn-warning btn-lg btn-block" onclick=spotCrimes();>Display<br>Crimes</button>
+            </div>
           </div>
           <div class="row">
-            <button type="button" class="btn btn-warning btn-lg btn-block" onclick=spotCrimes();>Show Crimes</button>
+            <div class="crime-btns gps-btn">
+              <button type="button" class="btn btn-danger btn-lg btn-block visible-xs visible-sm" onclick=locateGPS();>GPS</button>
+            </div>
           </div>
         </div>
       </div>

@@ -12,7 +12,7 @@
     <script src="../assets/js/jquery-ui.custom.min.js"></script>
     <script src="../assets/js/bootstrap.min.js"></script>
     <script src="../assets/js/bootstrap-select.min.js"></script>
-    <script src="../assets/js/jQDateRangeSlider-min.js"></script>
+    <script src="../assets/js/bootstrap-datepicker.js"></script>
     <script src="../assets/js/leaflet.js"></script>
     <script src="../assets/js/leaflet.markercluster.js"></script>
 
@@ -21,11 +21,14 @@
     <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/css/bootstrap-theme.min.css" rel="stylesheet">
     <link href="../assets/css/bootstrap-select.min.css" rel="stylesheet">
-    <link href="../assets/css/jQRangeSlider-iThing.min.css" rel="stylesheet">
+    <link href="../assets/css/bootstrap-datepicker.css" rel="stylesheet">
     <link href="../assets/css/leaflet.css" rel="stylesheet">
     <!--[if lte IE 8]>
-      <link rel="stylesheet" href="../assets/css/leaflet.ie.css" />
+      <link href="../assets/css/leaflet.ie.css" rel="stylesheet" />
     <![endif]-->
+    <link href="../assets/css/MarkerCluster.css" rel="stylesheet">
+    <link href="../assets/css/MarkerCluster.Default.css" rel="stylesheet">
+    <!--[if lte IE 8]><link href="../assets/css/MarkerCluster.Default.ie.css" rel="stylesheet" /><![endif]-->
     <link href="../assets/css/crime.css" rel="stylesheet">
 
     <style>
@@ -46,12 +49,88 @@
     </style>
 
     <script type="text/javascript">
+
+      var map = null;
+      var cluster_layer = null;
+      
+      function spotCrimes() {
+        center = map.getCenter();
+        distance = $("#distance-select").val();
+        host = "compass.pr.gov"
+        compass_request = "http://"+host+"/compass/delitos/location?lnglat="+map.getCenter().lng+","+map.getCenter().lat+"&dist="+distance
+        if(cluster_layer != null) {
+          map.removeLayer(cluster_layer);
+        }
+        $.getJSON(compass_request, function(data) {
+          crimes_layer = L.geoJson(data, {
+            pointToLayer: function (feature, latlng) {
+              return L.marker(latlng, {icon: selectMarkerIcon(feature.properties.delito_id)});
+            },
+            onEachFeature: function (feature, layer) {
+              var popupContent = "<p><strong>Delito:&nbsp;</strong>"+feature.properties.delito_desc+"<br><strong>Fecha:&nbsp;</strong>"+feature.properties.fecha_delito+"<br><strong>Hora:&nbsp;</strong>"+feature.properties.hora_delito+"</p>";
+              layer.bindPopup(popupContent);
+            }
+          });
+
+          cluster_layer = L.markerClusterGroup();
+          cluster_layer.addLayer(crimes_layer);
+
+          map.addLayer(cluster_layer);
+        });
+      }
+
+      function selectMarkerIcon(id) {
+        markerIcon = 'unknown.png';
+        switch(id) {
+          case 1:
+            markerIcon = 'asesinato.png';
+            break;
+          case 2:
+            markerIcon = 'violacion.png';
+            break;
+          case 3:
+            markerIcon = 'robo.png';
+            break;
+          case 4:
+            markerIcon = 'agresion.png';
+            break;
+          case 5:
+            markerIcon = 'escalamiento.png';
+            break;
+          case 6:
+            markerIcon = 'apropiacion-ilegal.png';
+            break;
+          case 7:
+            markerIcon = 'vehiculo-hurtado.png';
+            break;
+          case 8:
+            markerIcon = 'incendio.png';
+            break;
+        }
+        return L.icon({
+          iconUrl: '../assets/images/icons/' + markerIcon,
+          iconSize: [32, 37],
+          iconAnchor: [16, 37],
+          popupAnchor: [0, -28]
+        });
+      }
+
       $(window).on('load', function () {
-        //$('select').selectpicker('selectAll');
-        $('select').selectpicker();
+        $('#crimes-select').selectpicker('selectAll');
+        $('#distance-select').selectpicker();
+        $('#days-select').selectpicker();
+        $('#days-select').selectpicker('val', '60');
+
+        $('#range-datepicker').datepicker({
+          autoclose: true,
+          todayHighlight: true
+        });
+        $('.start').datepicker('setDate', new Date());
+
         var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
+
         map = L.map('map').setView([18.428, -66.059], 14).addLayer(osm);
       });
     </script>
@@ -94,7 +173,7 @@
                     <span class="pull-left"><strong>Crimes:</strong></span>
                     <div class="row">
                       <div class="col-md-12">
-                        <select class="crimes-select selectpicker" title="" data-header="Select Crimes" data-width="100%" data-selected-text-format="count>3" data-container="body" multiple>
+                        <select id="crimes-select" class="selectpicker" title="" data-header="Select Crimes" data-width="100%" data-selected-text-format="count>3" data-container="body" multiple>
                           <!-- Apropiación ilegal es -->
                           <!-- Ver código Penal del 2012 para más información -->
                           <!-- http://www.ramajudicial.pr/leyes/codpenal2012.html -->
@@ -120,7 +199,7 @@
                     <span class="pull-left"><strong>Distance:</strong></span>
                     <div class="row">
                       <div class="col-md-12">
-                        <select class="distance-select selectpicker show-tick" title="" data-header="Select Distance" data-width="100%" data-container="body">
+                        <select id="distance-select" class="selectpicker show-tick" title="" data-header="Select Distance" data-width="100%" data-container="body">
                           <option value=1>1 mile</option>
                           <option value=3>3 miles</option>
                           <option value=5>5 miles </option>
@@ -134,14 +213,40 @@
             <div class="panel panel-default">
               <div class="panel-heading">
                 <h4 class="panel-title">
-                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTime">
-                    <strong>Time</strong>
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseDateTime">
+                    <strong>Date</strong>
                   </a>
                 </h4>
               </div>
-              <div id="collapseTime" class="panel-collapse collapse">
+              <div id="collapseDateTime" class="panel-collapse collapse">
                 <div class="panel-body">
-                  Time search criteria
+                  <div class="col-md-12">
+                    <div class="col-md-6">
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="date-radios" id="option-radio-days" value="days" checked>
+                          <strong>Last</strong>
+                        </label>
+                        <select id="days-select" class="selectpicker show-tick" title="" data-header="Select Days" data-width="100%" data-container="body">
+                          <option value=7>7 days</option>
+                          <option value=30>30 days</option>
+                          <option value=60>60 days</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="date-radios" id="option-radio-range" value="range">
+                          <strong>Range</strong>
+                        </label>
+                        <div class="input-daterange" id="range-datepicker">
+                          <input type="text" class="form-control" name="start">
+                          <input type="text" class="form-control" name="end">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -152,7 +257,7 @@
             <button type="button" class="btn btn-danger btn-lg btn-block visible-xs visible-sm">My Location</button>
           </div>
           <div class="row">
-            <button type="button" class="btn btn-warning btn-lg btn-block">Show Crimes</button>
+            <button type="button" class="btn btn-warning btn-lg btn-block" onclick=spotCrimes();>Show Crimes</button>
           </div>
         </div>
       </div>

@@ -348,6 +348,10 @@
                       <input type="text" class="search-query span2" placeholder="Calle y pueblo...">
                     </form>
                   -->
+
+                    <ul class="nav pull-right">
+                      <a href="#myModal" role="button" class="btn btn-danger" data-toggle="modal">Alertas</a>
+                    </ul>
                     <ul class="nav pull-right">
                       <li><button class="btn btn-primary" data-dismiss="modal" onclick="locateUser();">GPS</button></li>
                     </ul>
@@ -453,7 +457,7 @@
             Datos en <a href="http://api.pr.gov">api.pr.gov</a>
           </div>
           <div class="span4">          
-            <a href="https://github.com/albertico/compass-api-crime-spotter">C&oacute;digo en Github</a>          
+            <a href="https://github.com/albertico/crime-spotter">C&oacute;digo en Github</a>          
           </div>
           <div class="span4">
               Powered by <a href="https://github.com/albertico/compass-api">Compass</a>
@@ -461,7 +465,30 @@
         </div>      
     </div>
   </div>
-  <!-- Developed by: Alberto Colón - (https://github.com/albertico/) CIO DRNA.pr.gov --> 
+
+  <!-- Modal -->
+  <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Alertas</h3>
+    </div>
+    <div class="modal-body">
+    <form>
+        <fieldset>
+        <label>Registro:</label>
+        <input type="text" placeholder="e-mail">
+        <span class="help-block">Ingresa tu dirección de correo electr&oacute;nico.</span>
+        </label>
+        </fieldset>
+    </div>
+      <div class="modal-footer">
+        <!-- <button class="btn btn-primary">Suscribir</button> -->
+        <button type="submit" class="btn btn-primary pull-right">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Developed by: Alberto A Colón Viera - (https://github.com/albertico/) CIO DRNA.gobierno.pr --> 
   <!-- Contributor: Andrés Colón Pérez (http://github.com/mindware/) CIO OGP.pr.gov  --> 
 </body>
 </html>
